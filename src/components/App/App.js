@@ -13,7 +13,7 @@ const App = () => {
   const [sortedBy, setSortedBy] = useState('recommended');
   const [searchTerm, setSearchTerm] = useState('');
 
-  useEffect(() => {
+  const fetchHotelResults = () => {
     hotelResultService
       .get()
       .then((response) => {
@@ -25,15 +25,15 @@ const App = () => {
         console.log(error);
         setError(true);
       });
+  };
+
+  useEffect(() => {
+    fetchHotelResults();
   }, []);
 
   useEffect(() => {
     const filteredList = fetchedHotels.filter((hotel) => {
-      return (
-        hotel.hotelStaticContent.name
-          .toLowerCase()
-          .includes(searchTerm)
-      );
+      return hotel.hotelStaticContent.name.toLowerCase().includes(searchTerm);
     });
 
     if (sortedBy === 'recommended') setDisplayedHotels(filteredList);
@@ -100,7 +100,7 @@ const App = () => {
         </div>
 
         {serverError ? (
-          <Error resetHotelResults={resetHotelResults} />
+          <Error fetchHotelResults={fetchHotelResults} />
         ) : (
           <div className="hotel-list">
             {displayedHotels.length ? (
