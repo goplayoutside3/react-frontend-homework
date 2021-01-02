@@ -32,7 +32,7 @@ const App = () => {
       return (
         hotel.hotelStaticContent.name
           .toLowerCase()
-          .search(searchTerm.toLowerCase()) !== -1
+          .includes(searchTerm)
       );
     });
 
@@ -51,6 +51,14 @@ const App = () => {
     }
   }, [searchTerm, sortedBy]);
 
+  const handleSearchTerm = (e) => {
+    e.preventDefault();
+
+    const str = e.target.value;
+    str.replace(/[^a-zA-Z ]/g, '');
+    setSearchTerm(str);
+  };
+
   const resetHotelResults = () => {
     setSearchTerm('');
     setDisplayedHotels(fetchedHotels.slice());
@@ -68,7 +76,7 @@ const App = () => {
               type="text"
               className="input"
               value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              onChange={(e) => handleSearchTerm(e)}
             />
             <label>Sort By Price</label>
             <select
@@ -92,7 +100,7 @@ const App = () => {
         </div>
 
         {serverError ? (
-          <Error resetHotelResults={resetHotelResults}/>
+          <Error resetHotelResults={resetHotelResults} />
         ) : (
           <div className="hotel-list">
             {displayedHotels.length ? (
