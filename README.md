@@ -1,4 +1,5 @@
 # Rocketmiles - React Technical Assesment
+This is Delilah Clement's completed frontend homework.
 
 ## Development Frontend server
 
