@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import './Hotel.style.scss';
 
 const Hotel = ({ hotel }) => {
   const [imgSrc, setImgSrc] = useState(true);
@@ -32,7 +33,7 @@ const Hotel = ({ hotel }) => {
             backgroundColor: '#ededed',
           }}
         >
-          <p>Image Coming Soon</p>
+          <p className="no-image">Image Coming Soon</p>
         </div>
       )}
       <div className="hotel-details">
