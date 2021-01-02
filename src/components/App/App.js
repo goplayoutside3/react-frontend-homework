@@ -10,6 +10,8 @@ const App = () => {
   const [fetchedHotels, setFetchedHotels] = useState([]);
   const [displayedHotels, setDisplayedHotels] = useState([]);
   const [serverError, setError] = useState(false);
+  const [sortedBy, setSortedBy] = useState('recommended');
+  const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
     hotelResultService
@@ -25,25 +27,72 @@ const App = () => {
       });
   }, []);
 
+  useEffect(() => {
+    const filteredList = fetchedHotels.filter((hotel) => {
+      return (
+        hotel.hotelStaticContent.name
+          .toLowerCase()
+          .search(searchTerm.toLowerCase()) !== -1
+      );
+    });
+
+    if (sortedBy === 'recommended') setDisplayedHotels(filteredList);
+
+    if (sortedBy === 'ascending') {
+      const sortedList = filteredList.sort(
+        (a, b) => a.lowestAveragePrice.amount - b.lowestAveragePrice.amount
+      );
+      setDisplayedHotels(sortedList);
+    } else if (sortedBy === 'descending') {
+      const sortedList = filteredList.sort(
+        (a, b) => b.lowestAveragePrice.amount - a.lowestAveragePrice.amount
+      );
+      setDisplayedHotels(sortedList);
+    }
+  }, [searchTerm, sortedBy]);
+
+  const resetHotelResults = () => {
+    setSearchTerm('');
+    setDisplayedHotels(fetchedHotels.slice());
+    setSortedBy('recommended');
+  };
+
   return (
     <div className="app-container">
       <div className="content">
         <div>
           <div className="filters">
-            Hotel name
-            <input type="text" className="input" maxLength={1} />
-            Price
-            <select name="" className="select">
-              <option value="">Recommended</option>
-              <option value="">Price low-to-high</option>
-              <option value="">Price high-to-low</option>
+            <label>Hotel name</label>
+            <input
+              id="name-search-input"
+              type="text"
+              className="input"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+            <label>Sort By Price</label>
+            <select
+              id="sorting-dropdown"
+              name=""
+              className="select"
+              onChange={(e) => setSortedBy(e.target.value)}
+            >
+              <option value="recommended">Recommended</option>
+              <option value="ascending">Price low-to-high</option>
+              <option value="descending">Price high-to-low</option>
             </select>
-            <button className="button">Reset</button>
+            <button
+              id="reset-button"
+              className="button"
+              onClick={resetHotelResults}
+            >
+              Reset
+            </button>
           </div>
         </div>
 
         {serverError ? (
-          <Error />
+          <Error resetHotelResults={resetHotelResults}/>
         ) : (
           <div className="hotel-list">
             {displayedHotels.length ? (
