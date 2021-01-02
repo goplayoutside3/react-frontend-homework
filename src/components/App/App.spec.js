@@ -65,5 +65,88 @@ describe('App', () => {
       expect(hotelResultService.get).toHaveBeenCalled();
       expect(wrapper.find('.hotel-card').length).toEqual(3);
     });
+
+    it('should search by name', async () => {
+      expect(hotelResultService.get).toHaveBeenCalled();
+      expect(wrapper.find('.hotel-card').length).toEqual(3);
+
+      await act(async () => {
+        wrapper.find('#name-search-input').simulate('change', {
+          target: { value: 'mile' },
+        });
+      });
+
+      wrapper.update();
+      expect(wrapper.find('.hotel-card').length).toEqual(1);
+    });
+
+    it('displays no hotel results when name match is not found', async () => {
+      expect(hotelResultService.get).toHaveBeenCalled();
+      expect(wrapper.find('.hotel-card').length).toEqual(3);
+
+      await act(async () => {
+        wrapper.find('#name-search-input').simulate('change', {
+          target: { value: 'no match' },
+        });
+      });
+
+      wrapper.update();
+      expect(wrapper.find('.hotel-card').length).toEqual(0);
+    });
+
+    it('sorts hotels by price in ascending order using dropdown element', async () => {
+      expect(hotelResultService.get).toHaveBeenCalled();
+      expect(wrapper.find('.hotel-card').length).toEqual(3);
+      expect(wrapper.find('.hotel-card').first().find('.price').text()).toEqual(
+        '$100'
+      );
+      expect(wrapper.find('.hotel-card').last().find('.price').text()).toEqual(
+        '$200'
+      );
+
+      await act(async () => {
+        wrapper.find('#sorting-dropdown').simulate('change', {
+          target: { value: 'ascending' },
+        });
+      });
+
+      wrapper.update();
+      expect(wrapper.find('.hotel-card').first().find('.price').text()).toEqual(
+        '$100'
+      );
+      expect(wrapper.find('.hotel-card').last().find('.price').text()).toEqual(
+        '$300'
+      );
+    });
+
+    it('clicking reset button should display all hotels in recommended order', async () => {
+      expect(hotelResultService.get).toHaveBeenCalled();
+      expect(wrapper.find('.hotel-card').length).toEqual(3);
+
+      await act(async () => {
+        wrapper.find('#name-search-input').simulate('change', {
+          target: { value: 'mile' },
+        });
+        wrapper.find('#sorting-dropdown').simulate('change', {
+          target: { value: 'descending' },
+        });
+      });
+
+      wrapper.update();
+      expect(wrapper.find('.hotel-card').length).toEqual(1);
+
+      await act(async () => {
+        wrapper.find('#reset-button').simulate('click');
+      });
+
+      wrapper.update();
+      expect(wrapper.find('.hotel-card').length).toEqual(3);
+      expect(
+        wrapper.find('.hotel-card').first().find('.hotel-name').text()
+      ).toEqual('Mag Mile');
+      expect(
+        wrapper.find('.hotel-card').last().find('.hotel-name').text()
+      ).toEqual('Millenium');
+    });
   });
 });
