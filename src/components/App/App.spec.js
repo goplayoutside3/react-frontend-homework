@@ -149,4 +149,23 @@ describe('App', () => {
       ).toEqual('Millenium');
     });
   });
+
+  describe('unsuccessful hotels api response', () => {
+    beforeEach(async () => {
+      jest
+        .spyOn(hotelResultService, 'get')
+        .mockRejectedValue(new Error('server error'));
+      const App = require('./App').default;
+
+      await act(async () => {
+        wrapper = mount(<App />);
+      });
+
+      wrapper.update();
+    });
+
+    it('should display Error component', () => {
+      expect(wrapper.find('#error-ui').exists()).toBe(true);
+    });
+  });
 });
